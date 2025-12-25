@@ -16,8 +16,9 @@ app.use(express.static("public"));
 
 const users = {};
 
-const rpID = "localhost";
-const origin = "http://localhost:3000";
+const rpID = "fingerprint-auth-adz8.onrender.com";
+const origin = "https://YOUR_NETLIFY_URL.netlify.app";
+
 
 /* REGISTER OPTIONS */
 app.post("/register/options", (req, res) => {
