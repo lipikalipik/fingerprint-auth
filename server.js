@@ -17,7 +17,7 @@ app.use(express.static("public"));
 const users = {};
 
 const rpID = "fingerprint-auth-adz8.onrender.com";
-const origin = "https://YOUR_NETLIFY_URL.netlify.app";
+const origin = "https://boisterous-brioche-f3d218.netlify.app";
 
 
 /* REGISTER OPTIONS */
