@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fingerprint Login</title>
+</head>
+
+<body>
+
+    <h2>Web Fingerprint Authentication</h2>
+    <input id="username" placeholder="Enter username" />
+    <br><br>
+    <button onclick="register()">Register Fingerprint</button>
+    <button onclick="login()">Login with Fingerprint</button>
+
+    <script>
+        async function register() {
+            const username = document.getElementById("username").value;
+
+            const options = await fetch("http://localhost:3000/register/options", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username })
+            }).then(res => res.json());
+
+            options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+            options.user.id = Uint8Array.from(username, c => c.charCodeAt(0));
+
+            const cred = await navigator.credentials.create({ publicKey: options });
+
+            await fetch("http://localhost:3000/register/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, attestation: cred })
+            });
+
+            alert("Fingerprint registered!");
+        }
+
+        async function login() {
+            const username = document.getElementById("username").value;
+
+            const options = await fetch("http://localhost:3000/login/options", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username })
+            }).then(res => res.json());
+
+            options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+            options.allowCredentials[0].id =
+                Uint8Array.from(atob(options.allowCredentials[0].id), c => c.charCodeAt(0));
+
+            const assertion = await navigator.credentials.get({ publicKey: options });
+
+            const result = await fetch("http://localhost:3000/login/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, assertion })
+            }).then(res => res.json());
+
+            alert(result.success ? "Login successful!" : "Login failed");
+        }
+    </script>
+
+</body>
+
+</html>
